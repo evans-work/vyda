@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>vida</title>
+  
+   <link rel="stylesheet" href="/css/style.css">
+   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+</head>
+<body>
+   <script>
+      const roomId = "<%= id %>"
+      const name = "<%= name %>"
+   </script>
+   <div id="remote-videos">
+   </div>
+   <div id="local-video"class="video">
+      <video width="100px"height="100px" autoplay muted ></video>
+   </div>
+   
+   
+   
+   
+   <script src="/socket.io/socket.io.js"></script> 
+   <script src="/js/main.js"></script>    
+</body>
+</html>
