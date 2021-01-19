@@ -7,14 +7,14 @@ socket.on('connect',() =>{
   
 })
 
-socket.on('joining',({isJoining,isWaiting})=>{
-   if(isJoining){
-      console.log('joining')
-   }
-   if(isWaiting){
-      console.log('Waiting for others')
-   }
-})
+// socket.on('joining',({isJoining,isWaiting})=>{
+//    if(isJoining){
+//       console.log('joining')
+//    }
+//    if(isWaiting){
+//       console.log('Waiting for others')
+//    }
+// })
 
 const localVideo = document.querySelector('#local-video video')
 const remoteVideosContainer = document.getElementById('remote-videos')
@@ -72,11 +72,11 @@ function start()
       try {
          localVideo.srcObject = window.localStream
       } catch (error) {
-         console.error('no source object',error)
+         console.error('Source object(srcObject) is not supported',error)
          try {
             localVideo.src = window.URL.createObjectURL(window.localStream)
          } catch (error) {
-            console.error('error using source',error)
+            console.error('source(src) is also not supported',error)
          }
          
       }
@@ -85,22 +85,25 @@ function start()
          localVideo.play()
       })
 
-      if(peers && peers.length>0)
-      {
-         peers.forEach(peer =>{
-            tracks.forEach(track =>{
-               peer.addTrack(track,stream)
-            })
-         })
-      }
+      socket.emit('join')
 
-      
+      // if(Object.keys(peers).length>0)
+      // {
+      //    console.log('Adding local stream to already inititated peers')
+      //   for(key in peers){
+      //       tracks.forEach(track =>{
+      //          peers[key].stream.addTrack(track,stream)
+      //       })
+      //    }
+      // }
+
 
    })
    .catch(err => 
    {
-      alert('error')
-      console.error(err)
+      
+      console.error('making local stream',err)
+      socket.close()
       
    })
 
@@ -117,7 +120,7 @@ function findPeer(username)
    return peers[username]
 }
 
-function createPeer(username)
+function createPeer(username,isLocal=false)
 {
    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
    const newPeer =  new RTCPeerConnection(configuration)
@@ -128,7 +131,11 @@ function createPeer(username)
       tracks.forEach(track => {
          newPeer.addTrack(track,window.localStream)
       });
+   }else{
+      
+      console.log(`no local stream when creating peer for ${username}`)
    }
+
    newPeer.addEventListener('icecandidate', e =>{  
       if(e.candidate != null)  
       {
@@ -159,11 +166,14 @@ function createPeer(username)
    try {
       thisPeerVideo.srcObject = thisPeerStream
    } catch (error) {
-      console.error('no source object',error)
+      console.error(' source object is not supported',error)
       try {
          thisPeerVideo.src = window.URL.createObjectURL(thisPeerStream)
       } catch (error) {
-         console.error('error using src to assign video',error)
+
+         console.error('Using source(src) also does not work',error)
+         alert(`could not create video for ${username}`)
+         
       }
       
    }
@@ -172,6 +182,7 @@ function createPeer(username)
       e.target.play()
       e.target.style.opacity=1;
    })
+
    thisPeerVideoContainer.appendChild(thisPeerVideo)
    remoteVideosContainer.appendChild(thisPeerVideoContainer)
    peers[username] = {
@@ -180,11 +191,13 @@ function createPeer(username)
       stream: thisPeerStream,
       video:thisPeerVideo
    }
+
    //console.log('peers',peers)
    newPeer.addEventListener('track', e =>{
-      console.log('received tracks')
+      console.log(`received tracks from ${username}`)
       thisPeer = findPeer(username)
-      thisPeer.stream.addTrack(e.track,thisPeer.stream)
+      // thisPeer.stream.addTrack(e.track,thisPeer.stream)
+      thisPeer.stream.addTrack(e.track)
    })
 
    return peers[username]
@@ -193,13 +206,13 @@ function createPeer(username)
 
 function sendOffer(username)
 {
-   console.log('creating offer...')
+   console.log(`creating offer for ${username}...`)
    peer = createPeer(username)
    peer.connection.createOffer()
    .then(offer =>{
-      console.log('setting local description...')
+      console.log(`setting local description for ${username}...`)
       peer.connection.setLocalDescription(offer)
-      console.log('sending offer...')
+      console.log(`sending offer to ${username}...`)
       socket.emit('offer',{offer:offer,to:username},({error}) =>{
          if(error)
          {
@@ -208,7 +221,7 @@ function sendOffer(username)
       })
    })
    .catch( err => {
-      alert('error')
+      alert(`could not connect with ${username} (offer)`)
       console.error(err)
    })
   
@@ -220,9 +233,9 @@ function sendAnswer(username)
    peer = findPeer(username)
    peer.connection.createAnswer()
    .then(answer =>{
-      console.log('setting local description...')
+      console.log(`Setting local description for ${username}... `)
       peer.connection.setLocalDescription(answer)
-      console.log('sending answer..')
+      console.log(`sending answer to ${username}..`)
       socket.emit('answer',{answer:answer,to:username},({error}) =>{
          if(error)
          {
@@ -232,7 +245,7 @@ function sendAnswer(username)
       })
    }) 
    .catch( err => {
-      alert('error')
+      alert(`could not connect with ${username} (answer)`)
       console.error(err)
    })
 
@@ -240,9 +253,9 @@ function sendAnswer(username)
 
 function onOffer({from,offer})
 {
-   console.log('received offer')
+   console.log(`received offer from ${from}`)
    peer = createPeer(from)
-   console.log('setting remote description')
+   console.log(`setting remote description for ${from}...`)
    peer.connection.setRemoteDescription(offer)
    sendAnswer(from)
    
@@ -250,15 +263,15 @@ function onOffer({from,offer})
 
 function onAnswer({from,answer})
 {
-   console.log('received answer')
-   console.log('setting remote descripiton')
+   console.log(`received answer from ${from}...`)
+   console.log(`setting remote descripiton for ${from}...`)
    peer = findPeer(from)
    peer.connection.setRemoteDescription(answer)
 }
 
 function oniceCandidate({username,candidate})
 {
-   console.log('new ice candidate')
+   console.log(`new ice candidate for ${username}`)
    peer = findPeer(username)
    peer.connection.addIceCandidate(candidate)
 }
@@ -269,21 +282,21 @@ socket.on('join', ({username}) => {
    if(peer)
    {
       const connectionState = peer.connection.connectionState
-      console.log('connection state',connectionState)
+      console.log(`received an extra join request from ${username} at connection state`,connectionState)
       
       switch (connectionState) {
          case 'connected':
-            console.log('You already have a viable connection to this user')
+            console.log(`You already have a viable connection to ${username}`)
             break;
          
          case 'connecting':
-            console.log('Still connecting')
+            console.log(`Still connecting to ${username}`)
             break;
          default:
             peer.video.parentNode.remove()
             peer.connection.close()
             delete peers[username] 
-            console.log('Connection failed. retrying...')
+            console.log(`Problem with connection to ${username}. retrying...`)
             sendOffer(username)
             break;
       }   
@@ -307,21 +320,22 @@ socket.on('icecandidate', (data) =>{
 })
 
 socket.on('remove', ({username}) =>{
-   console.log(` user ${username}  disconected`)
+   alert(`${username} disconnected`)
+   console.log(`${username}  disconected`)
    peer = findPeer(username)
    if(peer)
    {
-      console.log('found user video ')
-      console.log('removing it ')
+      peer.video.parentNode.remove()
+      peer.connection.close()
+      delete peers[username]
+      console.log(` removed ${username} video`)
    }
    else
    {
-      return console.log('could not find disconnected user video ')
+      return console.log(`Could not find ${username} video `)
    }
 
-   peer.video.parentNode.remove()
-   peer.connection.close()
-   delete peers[username]
+   
    
 })
 

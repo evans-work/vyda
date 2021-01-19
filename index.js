@@ -49,13 +49,17 @@ io.on('connection', async (socket )=>{
    }
 
    try {
+      
       socket.join(room)
    } catch (error) {
       socket.emit('error',{message:'Error joining room'})
    }
    
    //send join requests to other users
-   join(socket)
+   socket.on('join',() =>{
+      console.log('joining')
+      join(socket)
+   })
     
    socket.on('offer',({offer,to},callback) =>{
       socket.to(to).emit('offer',{from:socket.username,offer})
@@ -88,7 +92,7 @@ function join(socket){
    // console.log('clients',clients.length)
    
    socket.to(socket.room).emit('join',{username:socket.username})
-   socket.emit('joining',{isJoining:true,isWaiting:false})
+   //socket.emit('joining',{isJoining:true,isWaiting:false})
 }
 
 

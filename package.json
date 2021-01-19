@@ -4,7 +4,7 @@
   "description": "A realtime Video chat application.\r #\r [hosted version of the application](https://vyda.herokuapp.com/)\r #\r ![home page](https://github.com/evans-work/vyda/blob/master/public/images/vyda-screenshot.PNG)",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+   "start": "node index.js"
   },
   "repository": {
     "type": "git",
