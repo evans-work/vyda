@@ -215,8 +215,8 @@ function createPeer(username,isLocal=false)
 
    const size = getSize()
    for(key in peers){
-      peer[key].video.width = size
-      peer[key].video.height = size
+      peers[key].video.width = size
+      peers[key].video.height = size
    }
    return peers[username]
 }
