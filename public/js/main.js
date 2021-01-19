@@ -66,7 +66,7 @@ function start()
       }
   }
    //need the callback to start peer connections when we receive local stream
-   navigator.mediaDevices.getUserMedia({video:constraints,audio:true})
+   navigator.mediaDevices.getUserMedia({video:true,audio:true})
    .then(stream =>{
       window.localStream = new MediaStream()
       console.log('received local stream')
@@ -86,10 +86,12 @@ function start()
          }
          
       }
+      
 
       localVideo.addEventListener('loadedmetadata',() =>{
          localVideo.play()
       })
+      
 
       socket.emit('join')
 
@@ -156,8 +158,8 @@ function createPeer(username,isLocal=false)
    })
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
    const thisPeerVideo = document.createElement('video')
-   thisPeerVideo.setAttribute('width',300)
-   thisPeerVideo.setAttribute('height',300)
+   thisPeerVideo.setAttribute('width',document.body.clientHeight-100)
+   thisPeerVideo.setAttribute('height',document.body.clientWidth-100)
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
    try {
