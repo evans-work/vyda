@@ -59,8 +59,14 @@ function start()
          })
       }
    }
+   const constraints = {
+      "video": {
+          "width": 640,
+          "height": 480
+      }
+  }
    //need the callback to start peer connections when we receive local stream
-   navigator.mediaDevices.getUserMedia({video:true,audio:true})
+   navigator.mediaDevices.getUserMedia({video:constraints,audio:true})
    .then(stream =>{
       window.localStream = new MediaStream()
       console.log('received local stream')
@@ -86,16 +92,6 @@ function start()
       })
 
       socket.emit('join')
-
-      // if(Object.keys(peers).length>0)
-      // {
-      //    console.log('Adding local stream to already inititated peers')
-      //   for(key in peers){
-      //       tracks.forEach(track =>{
-      //          peers[key].stream.addTrack(track,stream)
-      //       })
-      //    }
-      // }
 
 
    })
