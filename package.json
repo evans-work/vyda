@@ -1,18 +1,30 @@
 {
   "name": "vyda",
   "version": "1.0.0",
-  "description": "A video chart application",
+  "description": "A realtime Video chat application.\r #\r [hosted version of the application](https://vyda.herokuapp.com/)\r #\r ![home page](https://github.com/evans-work/vyda/blob/master/public/images/vyda-screenshot.PNG)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Evans Munene",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evans-work/vyda.git"
+  },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/evans-work/vyda/issues"
+  },
+  "homepage": "https://github.com/evans-work/vyda#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0",
-    "uuid": "^8.3.0"
+    "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "socket.io": "^3.1.0",
+    "uuid": "^8.3.2"
   }
 }

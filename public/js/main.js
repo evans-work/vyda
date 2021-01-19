@@ -1,6 +1,20 @@
-const socket = io('/')
+const socket = io(window.location.origin,{query:{username:username,room:room}})
 let peers = {};
 
+
+socket.on('connect',() =>{
+   console.log('connected to server')
+  
+})
+
+socket.on('joining',({isJoining,isWaiting})=>{
+   if(isJoining){
+      console.log('joining')
+   }
+   if(isWaiting){
+      console.log('Waiting for others')
+   }
+})
 
 const localVideo = document.querySelector('#local-video video')
 const remoteVideosContainer = document.getElementById('remote-videos')
@@ -26,45 +40,13 @@ function muteUnmute(e)
    e.target.classList = 'mute-btn fa fa-volume-mute'
 }
 
-
-socket.on('connect',() =>{
-   console.log('connected to server')
-   
-   start(startCall)
-   
-})
-
-function startCall()
-{
-   let usernameToSend = name
-   if(!usernameToSend)
-   {
-      if(window.username)
-      {
-         usernameToSend = window.username
-
-      }
-      else
-      {
-         usernameToSend = 'user'
-      }
-   }
-   console.log('starting call')
-   //roomId and name comes from the html page passed over by the server
-   socket.emit('join', {name: usernameToSend,room:roomId},({error}) =>{
-      if(error)
-      {
-         alert(error)
-      }
-   })
-}
-function start(callback)
+function start()
 {
    if(!navigator.mediaDevices.getUserMedia)
    {
       navigator.mediaDevices.getUserMedia = function(constraints){
          var getUserMedia = navigator.webkitGetUserMedia | navigator.mozGetUserMedia|navigator.msGetUserMedia
-         console.log('getUserMedia',getUserMedia)
+         // console.log('getUserMedia',getUserMedia)
          if(!getUserMedia)
          {
             return  Promise.reject(new error('unable to access your media device in this browser, please try another'))
@@ -112,7 +94,7 @@ function start(callback)
          })
       }
 
-      callback()
+      
 
    })
    .catch(err => 
@@ -123,6 +105,10 @@ function start(callback)
    })
 
 }
+
+//start the call
+
+start()
 
 
 
@@ -146,7 +132,7 @@ function createPeer(username)
    newPeer.addEventListener('icecandidate', e =>{  
       if(e.candidate != null)  
       {
-         socket.emit('icecandidate',{candidate:e.candidate,to:username,from:window.username},({error}) =>{
+         socket.emit('icecandidate',{candidate:e.candidate,to:username},({error}) =>{
             if(error)
             {
                alert(error)
@@ -154,18 +140,20 @@ function createPeer(username)
          })
       }       
    }) 
-   thisPeerStream = new MediaStream()
+   const thisPeerStream = new MediaStream()
 
    thisPeerVideoContainer = document.createElement('div')
    thisPeerVideoContainer.classList = 'remoteVideo'
    thisPeerVideoMute = document.createElement('button')
    thisPeerVideoMute.setAttribute('video',username)
    thisPeerVideoMute.classList= "mute-btn fa fa-volume-mute"
+   
    thisPeerVideoMute.addEventListener('click', e =>{
       muteUnmute(e)
    })
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
-   thisPeerVideo = document.createElement('video')
+   const thisPeerVideo = document.createElement('video')
+   thisPeerVideo.setAttribute('width',window.innerWidth/2)
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
    try {
@@ -180,18 +168,19 @@ function createPeer(username)
       
    }
    
-   thisPeerVideo.addEventListener('loadedmetadata',e =>{
+   thisPeerVideo.addEventListener('canplay',e =>{
       e.target.play()
       e.target.style.opacity=1;
    })
    thisPeerVideoContainer.appendChild(thisPeerVideo)
    remoteVideosContainer.appendChild(thisPeerVideoContainer)
    peers[username] = {
-      name:name,
+      name:username,
       connection:newPeer,
       stream: thisPeerStream,
       video:thisPeerVideo
    }
+   //console.log('peers',peers)
    newPeer.addEventListener('track', e =>{
       console.log('received tracks')
       thisPeer = findPeer(username)
@@ -211,7 +200,7 @@ function sendOffer(username)
       console.log('setting local description...')
       peer.connection.setLocalDescription(offer)
       console.log('sending offer...')
-      socket.emit('offer',{offer:offer,to:username,from:window.username},({error}) =>{
+      socket.emit('offer',{offer:offer,to:username},({error}) =>{
          if(error)
          {
             alert(error)
@@ -234,10 +223,11 @@ function sendAnswer(username)
       console.log('setting local description...')
       peer.connection.setLocalDescription(answer)
       console.log('sending answer..')
-      socket.emit('answer',{answer:answer,from:window.username,to:username},({error}) =>{
+      socket.emit('answer',{answer:answer,to:username},({error}) =>{
          if(error)
          {
             alert(error)
+            
          }
       })
    }) 
@@ -248,22 +238,22 @@ function sendAnswer(username)
 
 }
 
-function onOffer(offer)
+function onOffer({from,offer})
 {
    console.log('received offer')
-   peer = createPeer(offer.username)
+   peer = createPeer(from)
    console.log('setting remote description')
-   peer.connection.setRemoteDescription(offer.offer)
-   sendAnswer(offer.username)
+   peer.connection.setRemoteDescription(offer)
+   sendAnswer(from)
    
 }
 
-function onAnswer(answer)
+function onAnswer({from,answer})
 {
    console.log('received answer')
    console.log('setting remote descripiton')
-   peer = findPeer(answer.username)
-   peer.connection.setRemoteDescription(answer.answer)
+   peer = findPeer(from)
+   peer.connection.setRemoteDescription(answer)
 }
 
 function oniceCandidate({username,candidate})
@@ -273,31 +263,32 @@ function oniceCandidate({username,candidate})
    peer.connection.addIceCandidate(candidate)
 }
 
-socket.on('username', ({username}) =>{
-   console.log(`receive my username as ${username}`)
-   window.username = username
-   
-})
+
 socket.on('join', ({username}) => {
-   const peerExists = findPeer(username)
-   if(peerExists)
+   const peer = findPeer(username)
+   if(peer)
    {
-      console.log('we already have a viable connection to this user. there is no reason to reconnect')
-      return
+      if(peer.connection.connectionState == 'connected'){
+         return console.log('You already have a viable connection to this user') 
+      }
+
+      peer.video.parentNode.remove()
+      peer.connection.close()
+      delete peers[username]   
    }
    sendOffer(username) 
 })
 
-socket.on('offer', (offer) =>{
-   onOffer(offer)
+socket.on('offer', (data) =>{
+   onOffer(data)
 })
 
-socket.on('answer', (answer) =>{
-   onAnswer(answer)
+socket.on('answer', (data) =>{
+   onAnswer(data)
 })
 
-socket.on('icecandidate', (icecandidate) =>{
-   oniceCandidate(icecandidate)
+socket.on('icecandidate', (data) =>{
+   oniceCandidate(data)
 })
 
 socket.on('remove', ({username}) =>{
@@ -310,11 +301,16 @@ socket.on('remove', ({username}) =>{
    }
    else
    {
-      console.log('could not find disconnected user video ')
+      return console.log('could not find disconnected user video ')
    }
 
    peer.video.parentNode.remove()
    peer.connection.close()
    delete peers[username]
    
+})
+
+
+socket.on('error',({message})=>{
+   alert(message)
 })

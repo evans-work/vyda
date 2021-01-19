@@ -1,128 +1,96 @@
+//node
+const path = require('path')
+
+//Third party
 const express = require('express')
 const app = express()
-const server = require('http').createServer(app)
 
-const io = require('socket.io')(server)
-const {addUser,findUser,removeUser,userCount} = require('./users.js')
-const cors = require('cors')
 const{v4:uuidv4} = require('uuid')
+const Joi = require('joi')
+const cors = require('cors')
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
 
+require('dotenv').config()
+
+//local
+const RequestHandler = require('./RequestHandler')
+const Config = require('./Config')
+const Rooms = require('./Rooms')
+
+
+//global variables
+global.appRoot = path.resolve(__dirname);
+
+//middlewares
+app.use(express.json())
 app.use(cors())
-
-app.set('view engine','ejs')
 app.use(express.static('public'))
 
-app.get('/',(req,res) =>{
-   
-   res.render('home')
-})
-app.get('/create',(req,res) =>{
-   res.redirect(`room/${uuidv4()}`)
-})
+app.set('view engine','ejs')
 
-app.get('/room/:room',(req,res) =>{
-   res.render(`${__dirname}/views/room`,{id:req.params.room,name:req.query.name})
-})
+app.use(require('./router'))
 
-io.on('connection', socket =>{
+//socket.io
+
+io.on('connection', async (socket )=>{
+   const username = socket.handshake.query.username
+   const room = socket.handshake.query.room
+   console.log('username',username)
+   console.log('room',room)
    console.log('new connection')
-   socket.on('join', (data,callback)=>{
-      onJoin(socket,data,callback)
+   socket.room = room
+   socket.username = username
+
+   try {
+      socket.join(username)
+   } catch (error) {
+      socket.emit('error',{message:'Error initializing a personal room'})
+   }
+
+   try {
+      socket.join(room)
+   } catch (error) {
+      socket.emit('error',{message:'Error joining room'})
+   }
+   
+   //send join requests to other users
+   join(socket)
+    
+   socket.on('offer',({offer,to},callback) =>{
+      socket.to(to).emit('offer',{from:socket.username,offer})
    })
 
-   socket.on('offer',(offer,callback) =>{
-      onOffer(offer,callback)
+   socket.on('answer',({answer,to},callback) =>{
+      socket.to(to).emit('answer',{from:socket.username,answer:answer})
    })
-   socket.on('answer',(answer,callback) =>{
-      onAnswer(answer,callback)
+
+   socket.on('icecandidate',({candidate,to},callback) =>{
+
+      socket.to(to).emit('icecandidate',{username:socket.username,candidate:candidate})
    })
-   socket.on('icecandidate',(candidate,callback) =>{
-      onIcecandidate(candidate,callback)
-   })
+
    socket.on('disconnect', e =>{
-      console.log('user disconnected')
-      thisUser = findUser(socket.username)
-      console.log('disconnected user',socket.username)
-      console.log('user count',userCount())
-      
-      if(thisUser)
-      {
-         console.log('before removal',userCount())
-         username = thisUser.username
-         thisRoom = thisUser.room
-         socket.broadcast.to(thisRoom).emit('remove',{username:username})
-         removeUser(username)
-         console.log('after Removal',userCount())
-         console.log(userCount())
-
-      }
-      
-      
+      socket.to(socket.room).emit('remove',{username:socket.username})
+      console.log('disconnected ',socket.username)
    })
    
-
 })
 
-function onJoin(socket,{name,room},callback)
-{
+
+
+function join(socket){
+   // if(!Rooms.exists){
+   //    return socket.emit('error','The room you are trying to join does not exist')   
+   // }
+
+   // const clients = await io
+   // console.log('clients',clients.length)
    
-   socket.join(room ,err =>{
-      callback({error:err})
-      return
-   })
-   const userObject = {
-      username: name === "user"? uuidv4():name,
-      room:room,
-      socket:socket
-   }
-   socket.username = userObject.username
-   const {error,success} = addUser(userObject)
-   if (error)
-   {
-      callback({error:error})
-      return
-   }
-   socket.emit('username',{username:userObject.username})
-   socket.broadcast.to(room).emit('join',{username:userObject.username})
+   socket.to(socket.room).emit('join',{username:socket.username})
+   socket.emit('joining',{isJoining:true,isWaiting:false})
 }
 
-function onOffer({offer,to,from},callback)
-{
-   console.log('offer from',from)
-   console.log('offer to',to)
-   const user = findUser(to)
-   if(!user)
-   {
-      callback({error:'offer:the user could not be found'})
-      return
-   }
-   user.socket.emit('offer',{username:from,offer:offer})
-   
 
-}
-function onAnswer({answer,from,to},callback)
-{
-   console.log('answer from ',from)
-   console.log('answer to ',to)
-   const user = findUser(to)
-   if(!user)
-   {
-      callback({error:'answer:the user could not be found'})
-      return
-   }
-   user.socket.emit('answer',{username:from,answer:answer})
 
-}
-function onIcecandidate({candidate,from,to},callback)
-{
-   const user = findUser(to)
-   if(!user)
-   {
-      callback({error:'candidate:the user could not be found'})
-      return
-   }
-   user.socket.emit('icecandidate',{username:from,candidate:candidate})
-
-}
-console.log(userCount())
 server.listen(process.env.PORT,() => console.log(`server listening on port ${process.env.PORT}`))
