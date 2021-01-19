@@ -338,7 +338,7 @@ socket.on('icecandidate', (data) =>{
 })
 
 socket.on('remove', ({username}) =>{
-   alert(`${username} disconnected`)
+   //alert(`${username} disconnected`)
    console.log(`${username}  disconected`)
    peer = findPeer(username)
    if(peer)
