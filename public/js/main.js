@@ -122,7 +122,7 @@ function getSize(){
    peersCount = Object.keys(peers).length < 2
    if(peersCount  <= 2){
       return 500
-   }else if(peersCount <= 4{
+   }else if(peersCount <= 4){
       return 300
    }else{
       return 200
