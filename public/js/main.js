@@ -171,8 +171,8 @@ function createPeer(username,isLocal=false)
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
    const thisPeerVideo = document.createElement('video')
    
-   thisPeerVideo.setAttribute('width',800)
-   thisPeerVideo.setAttribute('height',800)
+   thisPeerVideo.height = 300
+   thisPeerVideo.height = 300
    
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
@@ -213,6 +213,11 @@ function createPeer(username,isLocal=false)
       thisPeer.stream.addTrack(e.track)
    })
 
+   const size = getSize()
+   for(key in peers){
+      peer[key].video.width = size
+      peer[key].video.height = size
+   }
    return peers[username]
 }
 
