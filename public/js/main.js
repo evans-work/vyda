@@ -118,6 +118,18 @@ function findPeer(username)
    return peers[username]
 }
 
+function getSize(){
+   peersCount = Object.keys(peers).length < 2
+   if(peersCount  <= 2){
+      return 500
+   }else if(peersCount <= 4{
+      return 300
+   }else{
+      return 200
+   }
+
+}
+
 function createPeer(username,isLocal=false)
 {
    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
@@ -158,10 +170,9 @@ function createPeer(username,isLocal=false)
    })
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
    const thisPeerVideo = document.createElement('video')
-   thisPeerVideo.style.maxHeight = document.body.clientHeight
-   thisPeerVideo.style.maxWidth = document.body.clientWidth
-   thisPeerVideo.setAttribute('width',document.body.clientHeight-100)
-   thisPeerVideo.setAttribute('height',document.body.clientWidth-100)
+   
+   thisPeerVideo.setAttribute('width',800)
+   thisPeerVideo.setAttribute('height',800)
    
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
