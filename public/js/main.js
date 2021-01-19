@@ -158,8 +158,11 @@ function createPeer(username,isLocal=false)
    })
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
    const thisPeerVideo = document.createElement('video')
+   thisPeerVideo.style.maxHeight = document.body.clientHeight
+   thisPeerVideo.style.maxWidth = document.body.clientWidth
    thisPeerVideo.setAttribute('width',document.body.clientHeight-100)
    thisPeerVideo.setAttribute('height',document.body.clientWidth-100)
+   
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
    try {
