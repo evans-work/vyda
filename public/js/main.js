@@ -61,8 +61,8 @@ function start()
    }
    const constraints = {
       "video": {
-          "width": 640,
-          "height": 480
+          "width": 320,
+          "height": 240
       }
   }
    //need the callback to start peer connections when we receive local stream
@@ -156,7 +156,8 @@ function createPeer(username,isLocal=false)
    })
    thisPeerVideoContainer.appendChild(thisPeerVideoMute)
    const thisPeerVideo = document.createElement('video')
-   thisPeerVideo.setAttribute('width',window.innerWidth/2)
+   thisPeerVideo.setAttribute('width',300)
+   thisPeerVideo.setAttribute('height',300)
    thisPeerVideo.setAttribute('id',username)
    thisPeerVideo.srcObject = thisPeerStream
    try {
