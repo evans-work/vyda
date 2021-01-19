@@ -268,15 +268,30 @@ socket.on('join', ({username}) => {
    const peer = findPeer(username)
    if(peer)
    {
-      if(peer.connection.connectionState == 'connected'){
-         return console.log('You already have a viable connection to this user') 
-      }
-
-      peer.video.parentNode.remove()
-      peer.connection.close()
-      delete peers[username]   
+      const connectionState = peer.connection.connectionState
+      console.log('connection state',connectionState)
+      
+      switch (connectionState) {
+         case 'connected':
+            console.log('You already have a viable connection to this user')
+            break;
+         
+         case 'connecting':
+            console.log('Still connecting')
+            break;
+         default:
+            peer.video.parentNode.remove()
+            peer.connection.close()
+            delete peers[username] 
+            console.log('Connection failed. retrying...')
+            sendOffer(username)
+            break;
+      }   
+  
+   }else{
+      sendOffer(username) 
    }
-   sendOffer(username) 
+   
 })
 
 socket.on('offer', (data) =>{
