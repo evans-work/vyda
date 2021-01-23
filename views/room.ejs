@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <title>oneONone</title>
-  
-   <link rel="stylesheet" href="/css/style.css">
-   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+   <head> 
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>oneTime</title>
+      <link rel="stylesheet" href="http://localhost:5000/css/style.css">
+      <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
+   </head>
+   <body>
+      <script>
+         const room = "<%= room %>"
+         const username = "<%= username %>"
+      </script>
 
-</head>
-<body>
-   <script>
-      const room = "<%= room %>"
-      const username = "<%= username %>"
-   </script>
-   <div id="remote-videos">
-   </div>
-   <div id="local-video"class="video">
-      <video width="100px"height="100px" autoplay muted ></video>
-   </div>
-   
-   
-   
-   
-   <script src="/socket.io/socket.io.js"></script> 
-   <script src="/js/main.js"></script>    
-</body>
+      <div class="room">  
+         <div id="remote-videos">
+         </div>
+         <div id="local-video"class="video">
+            <video autoplay muted ></video>
+         </div>
+      </div>
+      
+
+      <script src="/socket.io/socket.io.js"></script> 
+      <script src="/js/main.js"></script> 
+   </body>   
 </html>

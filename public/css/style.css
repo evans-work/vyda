@@ -1,219 +1,133 @@
 *{
-   box-sizing:border-box;
+   box-sizing: border-box;
 }
-
-body{ 
-   background-color:rgb(4, 15, 8);
+body{
+   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
    width:100%;
-   height:100%;
+   height: 100vh;
    margin:0;
-   padding:0;
-}
-#local-video{
-   position: fixed;
-   top:100%;
-   left:100%;
-   transform: translate(-101%,-101%);
-   z-index: 10;
-}
-#local-video video {
-   width: 150px;
-   height: 150px;
-   object-fit: cover;
-   border-radius:50%;
-  
+   padding: 0;
+   --white: #ffffff;
+   --primary: #0000ff;
+   --secondary: #ff00ff;
+   --black:#000000;
 }
 
-#remote-videos{ 
-   display:flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   justify-content:center;
-   align-items: center;
-}
-.remote-video{
-   background-color: rgb(4, 25, 8);
-   position:relative;
-   display:flex;
-   flex-direction:column;
-   flex-wrap:nowrap;
-   justify-content:center;
-   align-items:center;
-}
-.mute-btn{
-   position:relative;
-   left:50%;
-   transform:translateX(-50%);
-   border:none;
-   outline: none;
-   display:block;
-   color:whitesmoke;
-   background-color: green;
-   border-radius:50%;
-   padding:5px;
-   opacity:60%;
-   width:50px;
-   height:50px;
-   font-size:20px;
-   z-index:100;
-
-}
-.mute-btn:hover,.mute-btn:focus{
-   border:none;
-   outline:none;
-}
-.remote-videos video{
-   max-width:300px;
-   max-height:300px;
-   min-width:300px;
-   min-height:300px;
-   width:300px;
-   height:300px;
-   object-fit: cover;
+.nav{
+   padding-left: 5vw;
+   padding-top: 2vh;
+   height:12vh;
 }
 
-
-
-@media only device and (max-width:520px)
-{
-   #local-video{
-      position: fixed;
-      top:100%;
-      left:100%;
-      transform: translate(-101%,-101%);
-      z-index: 10;
-   }
-   #local-video video{
-      width:50px!important;
-      height:50px!important;
-      max-width:50px!important;
-      max-height:50px!important;
-   }
-   #remote-videos{ 
-      display:flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content:center;
-      align-items: center;
-   }
-   .remote-video{
-      max-width:100px;
-      max-height:100px;
-      background-color: rgb(4, 25, 8);
-   }
-   .remote-videos video{
-      max-width: 300px;
-      min-width: 300px;
-      max-height: 300px;
-      min-height: 300px;
-      width:300px;
-      height:300px;
-      object-fit: cover;
-   }
-}
-#hero{
-   margin: 0;
-   padding:0;
-   width:100%;
-   height:100%;
-   position: relative;
-   display: flex;
-   justify-content: center;
-   align-items: center; 
-}
-.hero-img{
-  width:100%;
-   height:100%;
-   z-index: -1;
-   position: absolute;
-}
-.hero-img img{
-   width:100vw;
-   height:100vh;
-   object-fit: cover;  
-}
-.hero-forms{
-   color:white;
-   width:100%;
-   height:100%;
-   position: relative;
-   top:20vh;
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   justify-content: space-between;
-   align-items:center;
-   z-index: 10;
-}
-.create-room,.join-room{
-   margin:10px;
-   padding:0;
-   width:30%;
-   height:100%;
-   border-radius: 5px;
-}
-input,input:hover,input:focus{
-   border:none;
-   outline:none;
-   background:rgb(230,230,255);
-   display:block;
-   width:80%;
-   height:30px;
-   padding:5px 10px;
-   margin:10px auto;
-   border-radius:20px;
-   font-size:15px;
-   color:rgb(0,33,12);
-   box-shadow: 2px 2px 4px rgb(230,230,255);
-}
-
-input[type=submit]{
-   width:30%;
-   background-color: rgb(0,33,12);
-   color: rgb(230,230,255);
-}
-.title{
-   width:max-content;
-   margin:10px auto;
-}
-input[type=submit]:hover{
-   background-color: rgba(0,33,12,0.5);
-}
-#logo{
-   color:rgb(230,230,255);
-   text-decoration: none;
-   text-align:center;
-   display: flex;;
-   justify-content: center;
-   align-items: center;
-}
-.logo{
-   height: 50px;
-   width:80px;
-   object-fit: contain;
-}
-nav{
-   width:100%;
-   display:flex;
-   position: absolute;
-   background:transparent;
-   justify-content: space-between;
-   align-items: center;
-   z-index:100;
+.landing {
+   display: grid;
+   grid-template-columns: 1fr 2fr;
+   grid-gap: 0;
    
 }
-.nav-list{
-   color: rgb(230,230,255);
-   margin:10px;
+.form{
+   padding:5px;
+   width: 100%;
+   height: max-content;
+   margin: auto;
 }
-.nav-list a{
-   color: rgb(230,230,255);
-   text-decoration: none;
+.form .title{
+   text-align: center;
+   color: var(--primary);
+   text-transform: capitalize;
+   font-size: 1.5rem;
+}
+.form .input{
+   width:100%;
+
+}
+
+.form .input input{
+   outline: none;
+   border: none;
+   padding:5px 15px;
+   color: var(--primary);
    display: block;
-   text-shadow: 2px 2px 4px rgb(230,230,255);
+   width: 90%;
+   margin:10px auto;
+   min-height: 40px;
+   background-color: var(--white);
+   box-shadow: 1px 1px 2px var(--secondary),-1px -1px 2px var(--secondary);
+   border-radius: 30px;
+   font-size: 1rem;
 }
-.nav-list a:hover{
-   text-shadow: none;
+.form .input input:hover,.form .input input:focus{
+   outline: none;
+   border: none;
+}
+.form .submit{
+   width:50%;
+   margin:20px auto;
 }
 
+.form .submit button{
+   outline: none;
+   border: none;
+   display: block;
+   width:100%;
+   background-color: var(--primary);
+   border-radius: 30px;
+   min-height: 50px;
+   color: var(--white);
+   font-size: 1rem;
+}
 
+.form .submit button:hover,.form .submit button:focus,.form .submit button:active{
+   outline: none;
+   border: none;
+   background-color: var(--secondary);
+}
+
+.banner{
+   height: 80vh;
+}
+
+.banner img{
+   max-height: 100%;
+}
+
+#local-video video{
+   position: fixed;
+   bottom:5px;
+   right: 5px;
+   width:150px;
+   height: 150px;
+   border-radius: 50%;
+   object-fit: cover;
+}
+#remote-videos{
+   max-height: 100vh!important;
+}
+
+@media screen and (max-width:800px){
+   .landing {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 0;
+      
+   }
+   #local-video video{
+      width:120px;
+      height: 120px;     
+   }
+}
+
+@media screen and (max-width:600px){
+   .landing {
+      display: block  
+   }
+
+   .banner{
+      display: none;
+   }
+
+   #local-video video{
+      width:100px;
+      height: 100px;
+   }
+}

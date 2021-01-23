@@ -1,27 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Join</title>
-</head>
-<body>
-   <script>
-      const room = "<%= room %>"
-   </script>
-
-   <form  id="join">
+<%- include('header') -%>  
+<script>
+   const room = "<%= room %>"
+</script>
+<div class="landing">
+   <form  id="join" class="form">
       <h1 class="title">Join room</h1>
-      <div class="name">
+      <div class="input">
          <input type="text"id='join-username-input'placeholder="username"required>
       </div>
-      <div class="passcode">
+      <div class="input">
          <input type="password" id='join-passcode-input'placeholder="passcode" required>
       </div>
-      <div class="submit-join">
-         <input type="submit" id='join-submit-input'value="Join" placeholder="room name...">
+      <div class="submit">
+         <button type="submit" id='join-submit-input'>Join</button>
       </div>
    </form>
-   <script src="/js/join.js"></script>
-</body>
-</html>
+   <div class="banner">
+      <img src="/images/banner.jpg" alt="">
+   </div>
+</div>
+
+<script src="/js/join.js"></script>
+
+<%- include('footer') -%>

@@ -1,36 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Vyda</title>
-   <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-   <nav>
-      <a href="/" id="logo">
-         <img src="/images/vyda.png" alt="Logo" class="logo">
-         <span>VYDA</span>
-      </a>
-      <div class="nav-list">
-         <a href="/create">Auto-Generate</a>   
+<%- include('header'); -%>
+<div class="landing">
+   <form id="create" class="form">
+      <h2 class="title">Create Room</h2>
+      <div class="input">
+         <input type="text"id='create-room-input'placeholder="Room" required>
       </div>
-      
-   </nav>
+      <div class="input">
+         <input type="text"id='create-name-input'placeholder="Name"required>
+      </div>
+      <div class="input">
+         <input type="text"id='create-name-input'placeholder="Passcode"required minlength="6">
+      </div>
+      <div class="submit">
+         <button type="submit"id="create-submit-input"> Create </button>
+      </div>
 
-        <form id="create">
-           <h1 class="title">Start Chat</h1>
-            <div class="name">
-               <input type="text"id='create-room-input'placeholder="room">
-            </div>
-            <div class="name">
-               <input type="text"id='create-name-input'placeholder="name">
-            </div>
-            <div class="submit-create">
-               <input type="submit"id="create-submit-input" value="Create">
-            </div>
-        </form>
+   </form>
+
+   <div class="banner">
+      <img src="/images/banner.jpg" alt="">
+   </div>
+
+</div>
+
 
  <script src="/js/home.js"></script>
-</body>
-</html>
+ <%- include('footer'); -%>
