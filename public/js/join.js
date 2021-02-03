@@ -41,7 +41,10 @@ joinForm.addEventListener('submit', async e =>{
    if(data.token){
       location.replace(`${homeUrl}/room?t=${data.token}`)
    }else{
-      console.log(data)
+      if(response.status != 200){
+         alert(data)
+      }
+      
    }
    
 

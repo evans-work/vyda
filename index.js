@@ -82,6 +82,7 @@ io.on('connection', async (socket )=>{
 
    socket.on('disconnect', e =>{
       socket.to(socket.room).emit('remove',{username:socket.username})
+      Rooms.removeUser(socket.room,socket.username)
       console.log('disconnected ',socket.username)
    })
    

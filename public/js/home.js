@@ -39,6 +39,12 @@ createForm.addEventListener('submit', async (e) =>{
    });
 
    data = await response.json()
-   console.log(data)
+   if(response.status != 200){
+      alert(data)
+   }else{
+      alert('Room created successfully')
+      location.replace(`${location.origin}/join/${room}`)
+   }
+   
    
 })

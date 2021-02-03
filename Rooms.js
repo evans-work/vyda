@@ -46,12 +46,18 @@ module.exports = class Rooms{
 
 
    static removeRoom(name){
-      delete this.rooms[name]
+      if(this.rooms){
+         delete this.rooms[name]
+      }
+      
 
    }
 
    static removeUser(room,user){
-      delete this.rooms[room]['users'][user]
+      if(this.rooms[room]){
+         delete this.rooms[room].users[user]
+      }
+      
    }
 
    static roomExists(roomName){
