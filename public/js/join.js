@@ -24,20 +24,25 @@ joinForm.addEventListener('submit', async e =>{
    /*room comes from html template*/
    const url = `${homeUrl}/join/${room}`
    
-    const response = await fetch(url, {
-      method: 'POST', 
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer', 
-      body: JSON.stringify({join:{username,passcode}}) 
-    });
+   const response = await fetch(url, {
+   method: 'POST', 
+   mode: 'cors',
+   cache: 'no-cache',
+   credentials: 'same-origin',
+   headers: {
+      'Content-Type': 'application/json'
+   },
+   redirect: 'follow',
+   referrerPolicy: 'no-referrer', 
+   body: JSON.stringify({join:{username,passcode}}) 
+   });
 
-    data = await response.json()
-    console.log(data)
-   //window.location.replace(url)
+   data = await response.json()
+   if(data.token){
+      location.replace(`${homeUrl}/room?t=${data.token}`)
+   }else{
+      console.log(data)
+   }
+   
+
 })

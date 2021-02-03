@@ -1,4 +1,36 @@
-const socket = io(window.location.origin,{query:{username:username,room:room}})
+//Todo : retrieve token from url and pass it with socket initialization
+function getToken(){
+   let search = location.search.trim()
+   if(search == ''){
+      return {error: 'Access Denied'}
+   }
+   search = search.replace('?','')
+   let searchArray
+   let token
+   if(search.search('&' != -1)){
+      searchArray = search.split('&')
+      searchArray.forEach(query =>{
+         if(query.startsWith('t=')){
+            token = query.split('=').pop()
+         }
+      })
+   }else{
+      token = search.split('=').pop()
+   }
+   if(!token){
+      return {error:'Error retrieving access token'}
+   }
+   return {token:token}
+}
+
+const token = getToken()
+console.log(token)
+if(token.error){
+   alert(token.error)
+}
+
+const socket = io(window.location.origin,{query:{token:token.token}})
+
 let peers = {};
 
 
@@ -7,14 +39,8 @@ socket.on('connect',() =>{
   
 })
 
-// socket.on('joining',({isJoining,isWaiting})=>{
-//    if(isJoining){
-//       console.log('joining')
-//    }
-//    if(isWaiting){
-//       console.log('Waiting for others')
-//    }
-// })
+
+
 
 const localVideo = document.querySelector('#local-video video')
 const remoteVideosContainer = document.getElementById('remote-videos')
@@ -115,6 +141,7 @@ start()
 
 function findPeer(username)
 {
+
    return peers[username]
 }
 

@@ -10,6 +10,7 @@ const Joi = require('joi')
 const cors = require('cors')
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+const jwt = require('jsonwebtoken')
 
 require('dotenv').config()
 
@@ -34,11 +35,16 @@ app.use(require('./router'))
 //socket.io
 
 io.on('connection', async (socket )=>{
-   const username = socket.handshake.query.username
-   const room = socket.handshake.query.room
-   console.log('username',username)
-   console.log('room',room)
+   const token = socket.handshake.query.token
+   const details = getConnectionDetails(token)
+   console.log('details',details)
+   if(details.error){
+      return socket.emit('error',{message:details.error})
+   }
+   const username = details.details.username
+   const room = details.details.room
    console.log('new connection')
+
    socket.room = room
    socket.username = username
 
@@ -93,6 +99,19 @@ function join(socket){
    
    socket.to(socket.room).emit('join',{username:socket.username})
    //socket.emit('joining',{isJoining:true,isWaiting:false})
+}
+
+function getConnectionDetails(token){
+   console.log('token = ',token)
+   if(token && token == ''){
+      return {error:'No token provided'}
+   }
+   try { 
+      const details = jwt.verify(token,Config.JWTSECRET)
+      return {details:details}
+   } catch (error) {
+      return {error:error.message}
+   }
 }
 
 
