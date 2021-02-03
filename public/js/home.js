@@ -4,6 +4,11 @@ const homeUrl = document.location.origin
 
 const createRoomInput= document.getElementById('create-room-input')
 const createPasscodeInput = document.getElementById('create-passcode-input')
+const joinDetails = document.getElementById('join-details')
+const joinLink = document.getElementById('join-link')
+const copyBtn = document.getElementById('copy-btn')
+const joinBtn = document.getElementById('join-btn')
+const tempLinkInput = document.getElementById('temp-link-input')
 
 function isEmpty(value)
 {
@@ -13,6 +18,8 @@ function isEmpty(value)
    }
    return false
 }
+
+
 createForm.addEventListener('submit', async (e) =>{
    e.preventDefault()
    const room = createRoomInput.value
@@ -43,8 +50,20 @@ createForm.addEventListener('submit', async (e) =>{
       alert(data)
    }else{
       alert('Room created successfully')
-      location.replace(`${location.origin}/join/${room}`)
+      joinDetails.style.display = "block";
+      const link = `${location.origin}/join/${room}`
+      joinLink.innerHTML= link
+      tempLinkInput.innerHTML= document.getElementById('join-link').innerText
    }
    
    
 })
+
+joinBtn.addEventListener('click',(e)=>{
+   location.replace(`${location.origin}/join/${createRoomInput.value}`)
+})
+
+copyBtn.addEventListener('click',(e)=>{
+   tempLinkInput.select()
+   document.execCommand('copy')
+}) 

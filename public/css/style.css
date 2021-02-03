@@ -104,6 +104,48 @@ body{
    max-height: 100vh!important;
 }
 
+.join-details{
+   width:90%;
+   margin:10px auto;
+   display: none;
+}
+.join-details h4{
+   color: var(--primary);
+   text-align: center;
+   text-transform: capitalize;
+   font-size: 1.5rem;
+   text-decoration: underline;
+
+}
+.join-details p{
+   background-color: var(--white);
+   color: var(--secondary);
+}
+.join-details .buttons{
+   display:grid;
+   grid-template-columns: 1fr 1fr;
+}
+.join-details .buttons button{
+   min-height: 40px;
+   border-radius: 30px;
+   background-color: var(--primary);
+   box-shadow: 1px 1px 2px var(--secondary),-1px -1px 2px var(--secondary);
+   border:none;
+   outline:none;
+   margin:10px;
+   font-size: 1rem;
+   color: var(--white);
+
+}
+.join-details .buttons button:hover,.join-details .buttons button:focus{
+   background-color: var(--secondary);
+   border:none;
+   outline:none;
+}
+button{
+   cursor: pointer;
+}
+
 @media screen and (max-width:800px){
    .landing {
       display: grid;
